@@ -1,0 +1,3 @@
+datacenter: us-west
+consul_retry_join_wan:
+  - 54.171.178.161

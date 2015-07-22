@@ -1,0 +1,9 @@
+---
+- name: restart consul
+  service: name=consul state=restarted
+
+- name: reload nginx
+  service: name=nginx state=reloaded
+
+- name: restart uwsgi
+  service: name=uwsgi state=restarted

@@ -1,0 +1,57 @@
+- hosts: collectors
+  user: ec2-user
+  sudo: yes
+  gather_facts: no
+  vars:
+    daemons:
+      - consul
+      - nginx
+      - uwsgi
+    packages:
+      - app-admin/consul
+      - app-misc/beanstalkd
+      - dev-go/go-crypto
+      - dev-python/beanstalkc
+      - dev-python/consulate
+      - dev-python/flask
+      - dev-python/requests-unixsocket
+      - www-servers/nginx
+      - www-servers/uwsgi
+    portage_use_flags:
+      - nginx
+      - uwsgi
+  roles:
+    - common_system
+    - app_stack
+  tasks:
+    - name: nginx | configure
+      template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+      notify:
+        - reload nginx
+      tags:
+        - nginx
+
+    - name: code | deploy ep2015_collector sources
+      synchronize: src=../ep2015_collector dest=/var/www/ recursive=yes copy_links=yes delete=yes
+      tags:
+        - nginx
+        - uwsgi
+
+    - name: uwsgi | copy ep2015_collector ini
+      template: src=templates/ep2015_collector.ini dest=/etc/uwsgi.d/ep2015_collector.ini
+      tags:
+        - nginx
+        - uwsgi
+
+    - name: uwsgi | copy beanstalkd ini
+      copy: src=files/beanstalkd.ini dest=/etc/uwsgi.d/beanstalkd.ini
+      tags:
+        - nginx
+        - uwsgi
+
+    - name: daemons | start and enable at boot
+      service: name={{ item }} state=started enabled=yes
+      with_items: daemons
+      tags:
+        - consul
+        - uwsgi

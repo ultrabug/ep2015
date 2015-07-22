@@ -1,0 +1,22 @@
+- hosts: consuls
+  user: ec2-user
+  sudo: yes
+  gather_facts: no
+  vars:
+    daemons:
+      - consul
+    packages:
+      - app-admin/consul
+      - dev-go/go-crypto
+      - dev-ruby/uglifier
+    portage_use_flags:
+      - consul
+  roles:
+    - common_system
+    - consul_server
+  tasks:
+    - name: daemons | start and enable at boot
+      service: name={{ item }} state=started enabled=yes
+      with_items: daemons
+      tags:
+        - consul

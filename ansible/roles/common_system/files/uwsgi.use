@@ -1,0 +1,1 @@
+www-servers/uwsgi python python_gevent -uwsgi_plugins_carbon -uwsgi_plugins_rrdtool

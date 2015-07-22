@@ -1,0 +1,13 @@
+---
+- name: public IP | retrieve
+  shell: curl http://icanhazip.com
+  register: external_ip
+  tags:
+    - consul
+
+- name: consul | configure server
+  template: src=server.json dest=/etc/consul.d/server.json
+  notify:
+    - restart consul
+  tags:
+    - consul

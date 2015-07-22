@@ -1,0 +1,55 @@
+---
+- name: sysctl | configure
+  sysctl: name={{ item.name }} value='{{ item.value }}'
+  register: sysctl_config
+  with_items:
+      - name: net.core.somaxconn
+        value: 65535
+
+- name: sysctl | update
+  command: sysctl -p
+  when: sysctl_config.changed
+
+- name: open files limit | configure
+  lineinfile: dest=/etc/security/limits.conf regexp="{{ item.regexp }}" line="{{ item.line }}" insertbefore='^# End of file'
+  with_items:
+    - regexp: '^\*  soft'
+      line: '*  soft  nofile  32768'
+    - regexp: '^\*  hard'
+      line: '*  hard  nofile  65536'
+
+- name: portage | reset timestamp
+  command: find /usr/portage/metadata/ -maxdepth 1 -name 'timestamp.chk' -mtime +1 -delete removes=/usr/portage/metadata/timestamp.chk
+
+- name: portage | synchronize
+  command: emerge --sync creates=/usr/portage/metadata/timestamp.chk
+  register: portage_sync
+
+- name: layman | install
+  portage: package=layman state=installed
+  register: layman_installed
+
+- name: layman | synchronize
+  command: layman -S
+  when: layman_installed.changed
+
+- name: layman | add ultrabug overlay
+  layman: name=ultrabug state=present
+
+- name: layman | configure make.conf
+  lineinfile: dest=/etc/portage/make.conf line='source /var/lib/layman/make.conf'
+
+- name: portage | create keywords file
+  copy: dest=/etc/portage/package.keywords content="" force=no
+
+- name: portage | package keywords
+  lineinfile: dest=/etc/portage/package.keywords line={{ item }} state=present
+  with_items: packages
+
+- name: portage | package use flags
+  copy: src={{ item }}.use dest=/etc/portage/package.use/{{ item }}
+  with_items: portage_use_flags
+
+- name: portage | install packages
+  portage: package={{ item }} state=installed
+  with_items: packages

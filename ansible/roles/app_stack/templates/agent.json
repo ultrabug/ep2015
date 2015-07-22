@@ -1,0 +1,8 @@
+{
+  "datacenter": "{{ datacenter }}",
+  "data_dir": "/var/lib/consul",
+  "log_level": "INFO",
+  "server": false,
+  "encrypt": "PM5fE0Gf7qs9wI2iWtAU+g==",
+  "retry_join": ["{{ consul_server_addr }}"]
+}

@@ -1,0 +1,6 @@
+---
+# global app URL
+fqdn: 'ep2015.ultrabug.org'
+
+# nginx server_name URLs
+nginx_server_name: '*.ultrabug.org'

@@ -1,0 +1,9 @@
+{
+	"watches": [
+		{
+		  "type": "key",
+		  "key": "color",
+		  "handler": "/etc/consul.d/call_api_watch_handler.py"
+		}
+	]
+}

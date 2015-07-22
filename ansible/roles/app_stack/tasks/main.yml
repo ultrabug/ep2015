@@ -1,0 +1,20 @@
+---
+- name: uwsgi | configure service
+  copy: src=uwsgi.confd dest=/etc/conf.d/uwsgi
+  notify:
+    - restart uwsgi
+  tags:
+    - uwsgi
+
+- name: uwsgi | build the consul plugin
+  command: uwsgi --build-plugin https://github.com/unbit/uwsgi-consul chdir=/usr/lib/uwsgi/ creates=/usr/lib/uwsgi/consul_plugin.so
+  tags:
+    - consul
+    - uwsgi
+
+- name: consul | configure agent
+  template: src=agent.json dest=/etc/consul.d/agent.json
+  notify:
+    - restart consul
+  tags:
+    - consul

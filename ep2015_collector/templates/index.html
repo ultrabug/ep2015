@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>EP2015 ({{ datacenter }})</title>
+  <meta name="description" content="EP2015">
+  <meta name="author" content="ultrabug">
+
+  <style>
+    body, html {
+    	color: white;
+      	background-color: {{ color }};
+    	height: 100%;
+    }
+    #table-container
+	{
+	    display:    table;
+	    text-align: center;
+	    width:      100%;
+	    height:     100%;
+	}
+	#container
+	{
+	    display:        table-cell;
+	    vertical-align: middle;
+	}
+	#main
+	{
+	    display: inline-block;
+	}
+    h1, h2 {
+    	background-color: black;
+      	text-align: center;
+    }
+    h2 {
+    	color: grey;
+    }
+    #sum {
+    	text-align: right;
+    }
+    #dc {
+    	color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="table-container">
+    <div id="container">
+   		<div id="main">
+            {% for dc, v in all_counts.iteritems() %}
+            	<h2>{{ dc }}: {{ v }}</h2>
+            {% endfor %}
+            <h1 id='sum'>sum: {{ count }}</h1>
+            <h2 id='dc'>( {{ datacenter }} )</h2>
+        </div>
+    </div>
+  </div>
+</body>
+</html>
